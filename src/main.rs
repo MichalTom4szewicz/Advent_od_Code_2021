@@ -1,53 +1,49 @@
 use std::fs::File;
 use std::io::BufRead;
+use std::vec;
 
-// stack overflow transpose
-fn transpose2<T>(v: Vec<Vec<T>>) -> Vec<Vec<T>> {
-    assert!(!v.is_empty());
-    let len = v[0].len();
-    let mut iters: Vec<_> = v.into_iter().map(|n| n.into_iter()).collect();
-    (0..len)
-        .map(|_| {
-            iters
-                .iter_mut()
-                .map(|n| n.next().unwrap())
-                .collect::<Vec<T>>()
-        })
-        .collect()
+fn add(a: Vec<u32>, b: Vec<u32>) -> Vec<u32> {
+    let mut c = vec![0; a.len()];
+
+    for i in 0..a.len() {
+        c[i] = a[i] + b[i];
+    }
+    c
 }
 fn main() {
-    let file = File::open("input.txt").unwrap();
+    let file1 = File::open("input.txt").unwrap();
+    let mut buf_test = std::io::BufReader::new(file1);
+    let mut first_line = String::new();
+    let _ = buf_test.read_line(&mut first_line);
+    let len = (first_line.len() - 2) as u32;
+    let height = buf_test.lines().count() as u32;
 
+    let file = File::open("input.txt").unwrap();
     let buf = std::io::BufReader::new(file);
 
-    // collect input data into 2 dim vector
-    let vector = buf
-        .lines()
-        .map(|l| l.unwrap().chars().collect())
-        .collect::<Vec<Vec<char>>>();
+    let mut array = vec![0u32; len as usize];
 
-    let s_len = vector[0].len();
-    let transposed = transpose2(vector);
+    for (_i, line) in buf.lines().enumerate() {
+        let vector = line
+            .unwrap()
+            .chars()
+            .map(|item| item.to_digit(10).unwrap())
+            .collect::<Vec<u32>>();
+
+        array = add(vector, array);
+    }
 
     let mut gamma: u32 = 0;
     let mut epsilon: u32 = 0;
 
-    let mut i = 0;
-    for line in transposed {
-        let sum: u32 = line
-            .iter()
-            .map(|item| item.to_digit(10).unwrap())
-            .collect::<Vec<u32>>()
-            .iter()
-            .sum();
-
-        if 2 * sum > line.len() as u32 {
-            gamma += 2u32.pow((s_len - 1 - i) as u32);
+    for (i, number) in array.iter().enumerate() {
+        if 2 * number > height {
+            gamma += 2u32.pow(len - 1 - i as u32);
         } else {
-            epsilon += 2u32.pow((s_len - 1 - i) as u32);
+            epsilon += 2u32.pow(len - 1 - i as u32);
         }
-        i += 1;
     }
+    println!("e {} g {}", epsilon, gamma);
 
     println!("{}", epsilon * gamma);
 }
