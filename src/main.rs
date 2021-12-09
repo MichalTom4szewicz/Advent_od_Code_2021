@@ -1,3 +1,35 @@
+use std::fs::File;
+use std::io::BufRead;
+
 fn main() {
-    println!("Hello, world!");
+    let file = File::open("input.txt").unwrap();
+
+    let buf = std::io::BufReader::new(file);
+
+    // collect input data into 2 dim vector
+    let vector = buf
+        .lines()
+        .map(|l| l.unwrap().split(" ").map(|item| item.to_string()).collect())
+        .collect::<Vec<Vec<String>>>();
+
+    let mut depth = 0;
+    let mut position = 0;
+
+    for pair in vector {
+        // destructure vector into tuple
+        let (key, value): (&str, i32) = (&pair[0][..], pair[1].parse().unwrap());
+        match key {
+            "forward" => position += value,
+            "up" => depth -= value,
+            "down" => depth += value,
+            _ => println!("oops"),
+        }
+    }
+
+    println!(
+        "depth: {}, position: {}, result: {}",
+        depth,
+        position,
+        position * depth
+    )
 }
