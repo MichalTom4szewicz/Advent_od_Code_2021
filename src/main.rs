@@ -14,14 +14,20 @@ fn main() {
 
     let mut depth = 0;
     let mut position = 0;
+    let mut aim = 0;
 
     for pair in vector {
         // destructure vector into tuple
         let (key, value): (&str, i32) = (&pair[0][..], pair[1].parse().unwrap());
+
+        // different meaning of commands
         match key {
-            "forward" => position += value,
-            "up" => depth -= value,
-            "down" => depth += value,
+            "forward" => {
+                position += value;
+                depth += aim * value;
+            }
+            "up" => aim -= value,
+            "down" => aim += value,
             _ => println!("oops"),
         }
     }
