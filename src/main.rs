@@ -1,22 +1,13 @@
 use std::fs::File;
 use std::io::BufRead;
 
-// sum of 2 vectors column-wise
-fn add(a: Vec<u32>, b: &Vec<u32>) -> Vec<u32> {
-    let mut c = vec![0; a.len()];
-    for i in 0..a.len() {
-        c[i] = a[i] + b[i];
-    }
-    c
-}
-
 fn main() {
     let file = File::open("input.txt").unwrap();
 
     let buf = std::io::BufReader::new(file);
 
     // collect input data into 2 dim vector
-    let vectors = buf
+    let mut vectors = buf
         .lines()
         .map(|l| {
             l.unwrap()
@@ -26,27 +17,94 @@ fn main() {
         })
         .collect::<Vec<Vec<u32>>>();
 
-    let mut array = vec![0u32; vectors[0].len()];
+    let mut vectors_copy = vectors.clone();
 
-    // sum columns
-    for data in &vectors {
-        array = add(array, data)
-    }
+    let mut ones_i: Vec<usize> = Vec::new();
+    let mut zeroes_i: Vec<usize> = Vec::new();
 
-    let mut gamma: u32 = 0;
-    let mut epsilon: u32 = 0;
-
-    let len = vectors[0].len();
-    let height = vectors.len();
-
-    // if sum of column value is greater than half of column height then gamma 1 else epsilon 1
-    for (i, num) in array.iter().enumerate() {
-        if 2 * num > height as u32 {
-            gamma += 2u32.pow((len - 1 - i) as u32);
-        } else {
-            epsilon += 2u32.pow((len - 1 - i) as u32);
+    for i in 0..vectors[0].len() {
+        if vectors.len() == 1 {
+            break;
         }
+        for j in 0..vectors.len() {
+            if vectors[j][i] == 0 {
+                zeroes_i.push(j);
+            } else {
+                ones_i.push(j);
+            }
+        }
+
+        let mut new_vectors: Vec<Vec<u32>> = Vec::new();
+        if ones_i.len() >= zeroes_i.len() {
+            for idx in &mut ones_i {
+                new_vectors.push(vectors[idx.clone()].clone());
+            }
+        } else {
+            for idx in &mut zeroes_i {
+                new_vectors.push(vectors[idx.clone()].clone());
+            }
+        }
+        vectors.clear();
+        vectors = new_vectors;
+
+        // println!("{:?}", vectors);
+        // println!("-----------------");
+        ones_i.clear();
+        zeroes_i.clear();
     }
 
-    println!("{}", epsilon * gamma);
+    for i in 0..vectors_copy[0].len() {
+        if vectors_copy.len() == 1 {
+            break;
+        }
+        for j in 0..vectors_copy.len() {
+            if vectors_copy[j][i] == 0 {
+                zeroes_i.push(j);
+            } else {
+                ones_i.push(j);
+            }
+        }
+
+        let mut new_vectors: Vec<Vec<u32>> = Vec::new();
+        if ones_i.len() >= zeroes_i.len() {
+            for idx in &mut zeroes_i {
+                new_vectors.push(vectors_copy[idx.clone()].clone());
+            }
+        } else {
+            for idx in &mut ones_i {
+                new_vectors.push(vectors_copy[idx.clone()].clone());
+            }
+        }
+        vectors_copy.clear();
+        vectors_copy = new_vectors;
+
+        // println!("{:?}", vectors_copy);
+        // println!("-----------------");
+        ones_i.clear();
+        zeroes_i.clear();
+    }
+
+    let a = u32::from_str_radix(
+        &vectors[0]
+            .iter()
+            .map(|item| char::from_digit(*item, 2).unwrap())
+            .collect::<Vec<char>>()
+            .iter()
+            .collect::<String>()[..],
+        2,
+    )
+    .unwrap();
+
+    let b = u32::from_str_radix(
+        &vectors_copy[0]
+            .iter()
+            .map(|item| char::from_digit(*item, 2).unwrap())
+            .collect::<Vec<char>>()
+            .iter()
+            .collect::<String>()[..],
+        2,
+    )
+    .unwrap();
+
+    println!("{} {} {}", a, b, a * b);
 }
