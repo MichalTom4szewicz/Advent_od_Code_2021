@@ -45,8 +45,13 @@ fn main() {
     // println!("{:?}", numbers);
     // println!("{:?}", vvectors);
 
+    let mut won = vec![0; vvectors.len()];
+
     for number in numbers {
         for i in 0..vvectors.len() {
+            if won[i] == 1 {
+                continue;
+            }
             for j in 0..vvectors[i].len() {
                 let mut marked = false;
                 for k in 0..vvectors[i][j].len() {
@@ -57,15 +62,30 @@ fn main() {
                     }
                 }
 
+                // transpose board to easly check whether colum is marked
+                let mut transposed = vec![vec![(0u32, false); 5]; 5];
+                for x in 0..5 {
+                    for y in 0..5 {
+                        transposed[y][x] = vvectors[i][x][y].clone();
+                    }
+                }
+
                 // if we marked a number in a row check if that row is fully marked
                 if marked
-                    && vvectors[i][j]
+                    && (vvectors[i][j]
                         .iter()
                         .map(|item| item.1 as u32)
                         .collect::<Vec<u32>>()
                         .iter()
                         .sum::<u32>()
                         == 5
+                        || transposed[j]
+                            .iter()
+                            .map(|item| item.1 as u32)
+                            .collect::<Vec<u32>>()
+                            .iter()
+                            .sum::<u32>()
+                            == 5)
                 {
                     // calculate the score
                     let score: u32 = vvectors[i]
@@ -81,117 +101,22 @@ fn main() {
                         .iter()
                         .sum();
 
-                    println!(
-                        "score {} number {} result {}",
-                        score,
-                        number,
-                        score * number
-                    );
-                    return;
+                    // mark this board as won
+                    won[i] = 1;
+                    // println!("{:?}", won);
+                    // when all boards have won stop program and return result
+                    if won.iter().sum::<u32>() == vvectors.len() as u32 {
+                        println!(
+                            "board {} score {} number {} result {}",
+                            i,
+                            score,
+                            number,
+                            score * number
+                        );
+                        return;
+                    }
                 }
             }
         }
     }
-
-    // collect input data into 2 dim vector
-    // let mut vectors = buf
-    //     .lines()
-    //     .map(|l| {
-    //         l.unwrap()
-    //             .chars()
-    //             .map(|item| item.to_digit(10).unwrap())
-    //             .collect()
-    //     })
-    //     .collect::<Vec<Vec<u32>>>();
-
-    // let mut vectors_copy = vectors.clone();
-
-    // let mut ones_i: Vec<usize> = Vec::new();
-    // let mut zeroes_i: Vec<usize> = Vec::new();
-
-    // for i in 0..vectors[0].len() {
-    //     if vectors.len() == 1 {
-    //         break;
-    //     }
-    //     for j in 0..vectors.len() {
-    //         if vectors[j][i] == 0 {
-    //             zeroes_i.push(j);
-    //         } else {
-    //             ones_i.push(j);
-    //         }
-    //     }
-
-    //     let mut new_vectors: Vec<Vec<u32>> = Vec::new();
-    //     if ones_i.len() >= zeroes_i.len() {
-    //         for idx in &mut ones_i {
-    //             new_vectors.push(vectors[idx.clone()].clone());
-    //         }
-    //     } else {
-    //         for idx in &mut zeroes_i {
-    //             new_vectors.push(vectors[idx.clone()].clone());
-    //         }
-    //     }
-    //     vectors.clear();
-    //     vectors = new_vectors;
-
-    //     // println!("{:?}", vectors);
-    //     // println!("-----------------");
-    //     ones_i.clear();
-    //     zeroes_i.clear();
-    // }
-
-    // for i in 0..vectors_copy[0].len() {
-    //     if vectors_copy.len() == 1 {
-    //         break;
-    //     }
-    //     for j in 0..vectors_copy.len() {
-    //         if vectors_copy[j][i] == 0 {
-    //             zeroes_i.push(j);
-    //         } else {
-    //             ones_i.push(j);
-    //         }
-    //     }
-
-    //     let mut new_vectors: Vec<Vec<u32>> = Vec::new();
-    //     if ones_i.len() >= zeroes_i.len() {
-    //         for idx in &mut zeroes_i {
-    //             new_vectors.push(vectors_copy[idx.clone()].clone());
-    //         }
-    //     } else {
-    //         for idx in &mut ones_i {
-    //             new_vectors.push(vectors_copy[idx.clone()].clone());
-    //         }
-    //     }
-    //     vectors_copy.clear();
-    //     vectors_copy = new_vectors;
-
-    //     // println!("{:?}", vectors_copy);
-    //     // println!("-----------------");
-    //     ones_i.clear();
-    //     zeroes_i.clear();
-    // }
-
-    // let a = u32::from_str_radix(
-    //     &vectors[0]
-    //         .iter()
-    //         .map(|item| char::from_digit(*item, 2).unwrap())
-    //         .collect::<Vec<char>>()
-    //         .iter()
-    //         .collect::<String>()[..],
-    //     2,
-    // )
-    // .unwrap();
-
-    // let b = u32::from_str_radix(
-    //     &vectors_copy[0]
-    //         .iter()
-    //         .map(|item| char::from_digit(*item, 2).unwrap())
-    //         .collect::<Vec<char>>()
-    //         .iter()
-    //         .collect::<String>()[..],
-    //     2,
-    // )
-    // .unwrap();
-
-    // println!("{} {} {}", a, b, a * b);
 }
