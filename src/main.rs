@@ -1,6 +1,16 @@
 use std::fs::File;
 use std::io::BufRead;
 
+/*
+
+Scubber rating and generator rating are calculated separately. :(
+
+Save indices of "zero" and "ones" vectors in separate arrays just to rebuild new vector
+and overwrite old one. Repeated after each column
+
+
+*/
+
 fn main() {
     let file = File::open("input.txt").unwrap();
 
