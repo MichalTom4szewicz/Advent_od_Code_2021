@@ -2,6 +2,14 @@ use std::fs::File;
 use std::io::BufRead;
 use std::vec;
 
+/*
+
+Sum columns and check whether result is greater than half of line length.
+
+Then just convert binary to decimal and calculate result.
+
+*/
+
 fn add(a: Vec<u32>, b: Vec<u32>) -> Vec<u32> {
     let mut c = vec![0; a.len()];
 
