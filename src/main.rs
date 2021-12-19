@@ -1,6 +1,14 @@
 use std::fs::File;
 use std::io::BufRead;
 
+/*
+
+Put data into specific data structure and follow instructions? Nothing special.
+
+Used "switch" to make action corresponding to a word.
+
+*/
+
 fn main() {
     let file = File::open("input.txt").unwrap();
 
