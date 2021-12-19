@@ -1,6 +1,14 @@
 use std::fs::File;
 use std::io::BufRead; // 1.1.8
 
+/*
+
+Additionally array of boards that already won is created.
+
+WHen all boards have won just return result form recent board.
+
+*/
+
 fn main() {
     let file = File::open("input.txt").unwrap();
     let mut buf = std::io::BufReader::new(file);
