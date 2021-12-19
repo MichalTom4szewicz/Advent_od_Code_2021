@@ -1,6 +1,16 @@
 use std::fs::File;
 use std::io::BufRead; // 1.1.8
 
+/*
+
+Read numbers then read bingo matrices into array of 2 dim arrays.
+Each element is a pair of (value, marked).
+
+Sequentially mark points on boards. If point has been marked whole line is checked.
+Return result when a line of points is fully marked.
+
+*/
+
 fn main() {
     let file = File::open("input.txt").unwrap();
     let mut buf = std::io::BufReader::new(file);
